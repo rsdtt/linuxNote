@@ -1,0 +1,21 @@
+// ignore in main
+
+signal(SIGPIPE, SIG_IGN);
+
+// ignore anywhere
+
+	struct sigaction sa;
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGPIPE, &sa, 0);
+
+// ignore in pthread
+
+#ifndef WIN32
+	sigset_t signal_mask;
+	sigemptyset(&signal_mask);
+	sigaddset(&signal_mask, SIGPIPE);
+	int rc = pthread_sigmask(SIG_BLOCK, &signal_mask, NULL);
+	if (rc != 0) {
+		printf("block sigpipe error\n");
+	}
+#endif
